@@ -7,7 +7,7 @@
 
     <div class="main-sidebar-header ">
         <a style="color: #4ad2ea;" class="desktop-logo logo-light " href="{{ url('/' . ($page = 'home')) }}">
-            <h2>{{ __('admin.ray') }}</h2>
+            <h2>Task</h2>
         </a>
     </div>
     <div class="main-sidemenu" style="
@@ -18,7 +18,7 @@
             <div class="dropdown user-pro-body">
                 <div class="">
                     <img alt="user-img" class="avatar avatar-xl brround"
-                        src="{{ URL::asset('assets/img/logo.2.png') }}"><span
+                        src=""><span
                         class="avatar-status profile-status bg-green"></span>
                 </div>
                 <div class="user-info">
