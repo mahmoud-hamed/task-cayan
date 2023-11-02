@@ -2,13 +2,23 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\helpers\helper;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+
+    public $helper;
+    public function __construct()
+    {
+        $this->helper = new helper();
+
+    }
+
+    public function login(Request $request): JsonResponse
     {
         // Define the validation rules for the request data
         $rules = [
@@ -20,7 +30,7 @@ class AuthController extends Controller
         $validator = validator($request->all(), $rules);
     
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return  $this->helper->ResponseJson('error', 'Validation failed', $validator->errors());
         }
     
         $credentials = $request->only('email', 'password');
@@ -29,14 +39,16 @@ class AuthController extends Controller
             $user = Auth::user();
             $token = $user->createToken('AuthToken')->plainTextToken;
     
-            return response()->json([
+            return $this->helper->ResponseJson('success', 'Login successful', [
                 'user' => $user,
                 'access_token' => $token,
-            ], 200);
+            ]);
         }
     
-        return response()->json(['message' => 'Unauthorized'], 401);
+        return $this->helper->ResponseJson('error', 'Unauthorized');
     }
     
-
+    /**
+     * Your other methods
+     */
 }

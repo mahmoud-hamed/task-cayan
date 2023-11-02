@@ -4,21 +4,31 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
+use App\helpers\helper;
 use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use App\Http\Resources\DepartmentResource;
 
 class DepartmentController extends Controller
 {
+
+    public $helper;
+    public function __construct()
+    {
+        $this->helper = new helper();
+
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $departments = Department::latest()->get();
-        return DepartmentResource::collection($departments);
+
+        return  $this->helper->ResponseJson(1, 'success', DepartmentResource::collection($departments));
+
     }
 
     /**
@@ -34,7 +44,7 @@ class DepartmentController extends Controller
             'name' => $request->name,
         ]);
 
-        return new DepartmentResource($department);
+        return $this->ResponseJson(1, 'Department created successfully', new DepartmentResource($department));
     }
 
     /**
@@ -44,7 +54,7 @@ class DepartmentController extends Controller
     {
         $request->validate([
             'name' => 'required|string',
-            'id'=>'required|exists:departments,id'
+            'id' => 'required|exists:departments,id',
         ]);
 
         $department = Department::findOrFail($request->id);
@@ -53,7 +63,7 @@ class DepartmentController extends Controller
             'name' => $request->name,
         ]);
 
-        return new DepartmentResource($department);
+        return $this->ResponseJson(1, 'Department updated successfully', new DepartmentResource($department));
     }
 
     /**
@@ -62,8 +72,9 @@ class DepartmentController extends Controller
     public function destroy(Request $request)
     {
         $request->validate([
-            'id'=>'required|exists:departments,id'
+            'id' => 'required|exists:departments,id',
         ]);
+
         $department = Department::findOrFail($request->id);
 
         if ($department) {
@@ -72,18 +83,12 @@ class DepartmentController extends Controller
                 // No associated users, safe to delete the department
                 $department->delete();
 
-                return response()->json([
-                    'message' => 'Department deleted successfully',
-                ]);
+                return $this->ResponseJson(1, 'Department deleted successfully');
             } else {
-                return response()->json([
-                    'error' => 'Cannot delete the department because it has associated users.',
-                ], 400);
+                return $this->ResponseJson(0, 'Cannot delete the department because it has associated users.', [], 400);
             }
         } else {
-            return response()->json([
-                'error' => 'Department not found.',
-            ], 404);
+            return $this->ResponseJson(0, 'Department not found.',);
         }
     }
 }
